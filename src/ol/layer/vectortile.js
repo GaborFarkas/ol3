@@ -8,6 +8,7 @@ goog.require('ol.layer.VectorTileRenderType');
 goog.require('ol.obj');
 goog.require('ol.renderer.Type');
 goog.require('ol.renderer.canvas.VectorTileLayer');
+goog.require('ol.renderer.webgl.VectorTileLayer');
 
 
 /**
@@ -59,6 +60,8 @@ ol.layer.VectorTile.prototype.createRenderer = function(mapRenderer) {
   var type = mapRenderer.getType();
   if (ol.ENABLE_CANVAS && type === ol.renderer.Type.CANVAS) {
     renderer = new ol.renderer.canvas.VectorTileLayer(this);
+  } else if (ol.ENABLE_WEBGL && type === ol.renderer.Type.WEBGL) {
+    renderer = new ol.renderer.webgl.VectorTileLayer(/** @type {ol.renderer.webgl.Map} */ (mapRenderer), this);
   }
   return renderer;
 };

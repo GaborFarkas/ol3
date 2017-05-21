@@ -136,11 +136,12 @@ if (ol.ENABLE_WEBGL) {
    * @param {number} pixelRatio Pixel ratio.
    * @param {number} opacity Global opacity.
    * @param {Object.<string, boolean>} skippedFeaturesHash Ids of features
+   * @param {ol.Transform} opt_transform Transform to apply on the projection matrix.
    *  to skip.
    */
   ol.render.webgl.ReplayGroup.prototype.replay = function(context,
       center, resolution, rotation, size, pixelRatio,
-      opacity, skippedFeaturesHash) {
+      opacity, skippedFeaturesHash, opt_transform) {
     /** @type {Array.<number>} */
     var zs = Object.keys(this.replaysByZIndex_).map(Number);
     zs.sort(ol.array.numberSafeCompareFunction);
@@ -154,7 +155,7 @@ if (ol.ENABLE_WEBGL) {
           replay.replay(context,
               center, resolution, rotation, size, pixelRatio,
               opacity, skippedFeaturesHash,
-              undefined, false);
+              undefined, false, undefined, opt_transform);
         }
       }
     }

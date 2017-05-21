@@ -238,7 +238,7 @@ ol.renderer.Layer.prototype.updateUsedTiles = function(usedTiles, tileSource, z,
  * @param {ol.Extent} extent Extent.
  * @param {number} currentZ Current Z.
  * @param {number} preload Load low resolution tiles up to 'preload' levels.
- * @param {function(this: T, ol.Tile)=} opt_tileCallback Tile callback.
+ * @param {function(this: T, ol.Tile, ol.tilegrid.TileGrid, number)=} opt_tileCallback Tile callback.
  * @param {T=} opt_this Object to use as `this` in `opt_tileCallback`.
  * @protected
  * @template T
@@ -269,7 +269,7 @@ ol.renderer.Layer.prototype.manageTilePyramid = function(
             }
           }
           if (opt_tileCallback !== undefined) {
-            opt_tileCallback.call(opt_this, tile);
+            opt_tileCallback.call(opt_this, tile, tileGrid, pixelRatio);
           }
         } else {
           tileSource.useTile(z, x, y, projection);

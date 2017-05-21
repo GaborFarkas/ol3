@@ -78,9 +78,27 @@ if (ol.ENABLE_WEBGL) {
 
     /**
      * @private
+     * @type {!Array.<ol.Tile>}
+     */
+    this.renderedTiles_ = [];
+
+    /**
+     * @private
      * @type {ol.Size}
      */
     this.tmpSize_ = [0, 0];
+
+    /**
+     * @private
+     * @type {number}
+     */
+    this.tilePixelSize_ = undefined;
+
+    /**
+     * @private
+     * @type {number}
+     */
+    this.tileGutter_ = undefined;
 
   };
   ol.inherits(ol.renderer.webgl.TileLayer, ol.renderer.webgl.Layer);
@@ -134,11 +152,33 @@ if (ol.ENABLE_WEBGL) {
 
 
   /**
+   * @param {ol.Tile} tile Tile.
+   * @param {ol.tilegrid.TileGrid} tileGrid Tile grid.
+   * @param {number} pixelRatio Pixel ratio.
+   */
+  ol.renderer.webgl.TileLayer.prototype.tilePyramidCallback = function(tile, tileGrid,
+      pixelRatio) {
+    var mapRenderer = this.mapRenderer;
+    var tileTextureQueue = mapRenderer.getTileTextureQueue();
+
+    if (tile.getState() == ol.TileState.LOADED &&
+        !mapRenderer.isTileTextureLoaded(tile) &&
+        !tileTextureQueue.isKeyQueued(tile.getKey())) {
+      tileTextureQueue.enqueue([
+        tile,
+        tileGrid.getTileCoordCenter(tile.tileCoord),
+        tileGrid.getResolution(tile.tileCoord[0]),
+        this.tilePixelSize_, this.tileGutter_ * pixelRatio
+      ]);
+    }
+  };
+
+
+  /**
    * @inheritDoc
    */
   ol.renderer.webgl.TileLayer.prototype.prepareFrame = function(frameState, layerState, context) {
 
-    var mapRenderer = this.mapRenderer;
     var gl = context.getGL();
 
     var viewState = frameState.viewState;
@@ -150,12 +190,13 @@ if (ol.ENABLE_WEBGL) {
     var z = tileGrid.getZForResolution(viewState.resolution);
     var tileResolution = tileGrid.getResolution(z);
 
-    var tilePixelSize =
+    var tilePixelSize = this.tilePixelSize_ =
         tileSource.getTilePixelSize(z, frameState.pixelRatio, projection);
     var pixelRatio = tilePixelSize[0] /
         ol.size.toSize(tileGrid.getTileSize(z), this.tmpSize_)[0];
     var tilePixelResolution = tileResolution / pixelRatio;
-    var tileGutter = tileSource.getTilePixelRatio(pixelRatio) * tileSource.getGutter(projection);
+    var tileGutter = this.tileGutter_ =
+        tileSource.getTilePixelRatio(pixelRatio) * tileSource.getGutter(projection);
 
     var center = viewState.center;
     var extent = frameState.extent;
@@ -189,25 +230,7 @@ if (ol.ENABLE_WEBGL) {
       this.bindFramebuffer(frameState, framebufferDimension);
       gl.viewport(0, 0, framebufferDimension, framebufferDimension);
 
-      gl.clearColor(0, 0, 0, 0);
-      gl.clear(ol.webgl.COLOR_BUFFER_BIT);
-      gl.disable(ol.webgl.BLEND);
-
-      var program = context.getProgram(this.fragmentShader_, this.vertexShader_);
-      context.useProgram(program);
-      if (!this.locations_) {
-        // eslint-disable-next-line openlayers-internal/no-missing-requires
-        this.locations_ = new ol.renderer.webgl.tilelayershader.Locations(gl, program);
-      }
-
-      context.bindBuffer(ol.webgl.ARRAY_BUFFER, this.renderArrayBuffer_);
-      gl.enableVertexAttribArray(this.locations_.a_position);
-      gl.vertexAttribPointer(
-          this.locations_.a_position, 2, ol.webgl.FLOAT, false, 16, 0);
-      gl.enableVertexAttribArray(this.locations_.a_texCoord);
-      gl.vertexAttribPointer(
-          this.locations_.a_texCoord, 2, ol.webgl.FLOAT, false, 16, 8);
-      gl.uniform1i(this.locations_.u_texture, 0);
+      this.setUpProgram(context, gl);
 
       /**
        * @type {Object.<number, Object.<string, ol.Tile>>}
@@ -244,7 +267,7 @@ if (ol.ENABLE_WEBGL) {
           }
           tileState = tile.getState();
           if (tileState == ol.TileState.LOADED) {
-            if (mapRenderer.isTileTextureLoaded(tile)) {
+            if (this.isTileLoaded(tile)) {
               tilesToDrawByZ[z][tile.tileCoord.toString()] = tile;
               continue;
             }
@@ -269,6 +292,7 @@ if (ol.ENABLE_WEBGL) {
 
       }
 
+      this.renderedTiles_.length = 0;
       /** @type {Array.<number>} */
       var zs = Object.keys(tilesToDrawByZ).map(Number);
       zs.sort(ol.array.numberSafeCompareFunction);
@@ -287,10 +311,9 @@ if (ol.ENABLE_WEBGL) {
               framebufferExtentDimension - 1;
           u_tileOffset[3] = 2 * (tileExtent[1] - framebufferExtent[1]) /
               framebufferExtentDimension - 1;
-          gl.uniform4fv(this.locations_.u_tileOffset, u_tileOffset);
-          mapRenderer.bindTileTexture(tile, tilePixelSize,
-              tileGutter * pixelRatio, ol.webgl.LINEAR, ol.webgl.LINEAR);
-          gl.drawArrays(ol.webgl.TRIANGLE_STRIP, 0, 4);
+          this.drawTileImage(tile, frameState, gl, u_tileOffset,
+              tilePixelSize, pixelRatio, tileGutter);
+          this.renderedTiles_.push(tile);
         }
       }
 
@@ -308,25 +331,9 @@ if (ol.ENABLE_WEBGL) {
     }
 
     this.updateUsedTiles(frameState.usedTiles, tileSource, z, tileRange);
-    var tileTextureQueue = mapRenderer.getTileTextureQueue();
     this.manageTilePyramid(
         frameState, tileSource, tileGrid, pixelRatio, projection, extent, z,
-        tileLayer.getPreload(),
-        /**
-         * @param {ol.Tile} tile Tile.
-         */
-        function(tile) {
-          if (tile.getState() == ol.TileState.LOADED &&
-              !mapRenderer.isTileTextureLoaded(tile) &&
-              !tileTextureQueue.isKeyQueued(tile.getKey())) {
-            tileTextureQueue.enqueue([
-              tile,
-              tileGrid.getTileCoordCenter(tile.tileCoord),
-              tileGrid.getResolution(tile.tileCoord[0]),
-              tilePixelSize, tileGutter * pixelRatio
-            ]);
-          }
-        }, this);
+        tileLayer.getPreload(), this.tilePyramidCallback, this);
     this.scheduleExpireCache(frameState, tileSource);
     this.updateLogos(frameState, tileSource);
 
@@ -348,6 +355,61 @@ if (ol.ENABLE_WEBGL) {
     ol.transform.translate(texCoordMatrix, -0.5, -0.5);
 
     return true;
+  };
+
+
+  /**
+   * @param {ol.webgl.Context} context WebGL context.
+   * @param {WebGLRenderingContext} gl GL.
+   */
+  ol.renderer.webgl.TileLayer.prototype.setUpProgram = function(context, gl) {
+    gl.clearColor(0, 0, 0, 0);
+    gl.clear(ol.webgl.COLOR_BUFFER_BIT);
+    gl.disable(ol.webgl.BLEND);
+
+    var program = context.getProgram(this.fragmentShader_, this.vertexShader_);
+    context.useProgram(program);
+    if (!this.locations_) {
+      // eslint-disable-next-line openlayers-internal/no-missing-requires
+      this.locations_ = new ol.renderer.webgl.tilelayershader.Locations(gl, program);
+    }
+
+    context.bindBuffer(ol.webgl.ARRAY_BUFFER, this.renderArrayBuffer_);
+    gl.enableVertexAttribArray(this.locations_.a_position);
+    gl.vertexAttribPointer(
+        this.locations_.a_position, 2, ol.webgl.FLOAT, false, 16, 0);
+    gl.enableVertexAttribArray(this.locations_.a_texCoord);
+    gl.vertexAttribPointer(
+        this.locations_.a_texCoord, 2, ol.webgl.FLOAT, false, 16, 8);
+    gl.uniform1i(this.locations_.u_texture, 0);
+  };
+
+
+  /**
+   * @param {ol.Tile} tile Tile.
+   * @param {olx.FrameState} frameState Frame state.
+   * @param {WebGLRenderingContext} gl GL.
+   * @param {Array<number>} tileOffset Tile offset.
+   * @param {number} pixelSize Pixel size.
+   * @param {number} pixelRatio Pixel ratio.
+   * @param {number} gutter Tile gutter.
+   */
+  ol.renderer.webgl.TileLayer.prototype.drawTileImage = function(tile, frameState,
+      gl, tileOffset, pixelSize, pixelRatio, gutter) {
+    var mapRenderer = this.mapRenderer;
+    gl.uniform4fv(this.locations_.u_tileOffset, tileOffset);
+    mapRenderer.bindTileTexture(tile, pixelSize,
+        gutter * pixelRatio, ol.webgl.LINEAR, ol.webgl.LINEAR);
+    gl.drawArrays(ol.webgl.TRIANGLE_STRIP, 0, 4);
+  };
+
+
+  /**
+   * @param {ol.Tile} tile Tile.
+   * @return {boolean} Tile is loaded.
+   */
+  ol.renderer.webgl.TileLayer.prototype.isTileLoaded = function(tile) {
+    return this.mapRenderer.isTileTextureLoaded(tile);
   };
 
 

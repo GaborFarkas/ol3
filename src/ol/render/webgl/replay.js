@@ -252,13 +252,14 @@ if (ol.ENABLE_WEBGL) {
    * @param {boolean} oneByOne Draw features one-by-one for the hit-detecion.
    * @param {ol.Extent=} opt_hitExtent Hit extent: Only features intersecting
    *  this extent are checked.
+   * @param {ol.Transform} opt_transform Transform to apply on the projection matrix.
    * @return {T|undefined} Callback result.
    * @template T
    */
   ol.render.webgl.Replay.prototype.replay = function(context,
       center, resolution, rotation, size, pixelRatio,
       opacity, skippedFeaturesHash,
-      featureCallback, oneByOne, opt_hitExtent) {
+      featureCallback, oneByOne, opt_hitExtent, opt_transform) {
     var gl = context.getGL();
     var tmpStencil, tmpStencilFunc, tmpStencilMaskVal, tmpStencilRef, tmpStencilMask,
         tmpStencilOpFail, tmpStencilOpPass, tmpStencilOpZFail;
@@ -296,9 +297,13 @@ if (ol.ENABLE_WEBGL) {
 
     // set the "uniform" values
     var projectionMatrix = ol.transform.reset(this.projectionMatrix_);
-    ol.transform.scale(projectionMatrix, 2 / (resolution * size[0]), 2 / (resolution * size[1]));
-    ol.transform.rotate(projectionMatrix, -rotation);
-    ol.transform.translate(projectionMatrix, -(center[0] - this.origin[0]), -(center[1] - this.origin[1]));
+    if (opt_transform) {
+      ol.transform.set(projectionMatrix, opt_transform);
+    } else {
+      ol.transform.scale(projectionMatrix, 2 / (resolution * size[0]), 2 / (resolution * size[1]));
+      ol.transform.rotate(projectionMatrix, -rotation);
+      ol.transform.translate(projectionMatrix, -(center[0] - this.origin[0]), -(center[1] - this.origin[1]));
+    }
 
     var offsetScaleMatrix = ol.transform.reset(this.offsetScaleMatrix_);
     ol.transform.scale(offsetScaleMatrix, 2 / size[0], 2 / size[1]);
