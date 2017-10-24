@@ -85,6 +85,13 @@
  *          styles[GeometryType.POINT]
  *      );
  * ```
+ *
+ * Raster styles.
+ *
+ * If no style is defined, the following default style is used:
+ * ```js
+ *  var style = new ol.style.Monochrome();
+ * ```
  */
 import {assert} from '../asserts.js';
 import GeometryType from '../geom/GeometryType.js';
