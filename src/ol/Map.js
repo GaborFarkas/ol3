@@ -7,6 +7,7 @@ import {defaults as defaultInteractions} from './interaction.js';
 import {assign} from './obj.js';
 import CanvasImageLayerRenderer from './renderer/canvas/ImageLayer.js';
 import CanvasMapRenderer from './renderer/canvas/Map.js';
+import CanvasRasterLayerRenderer from './renderer/canvas/RasterLayer.js';
 import CanvasTileLayerRenderer from './renderer/canvas/TileLayer.js';
 import CanvasVectorLayerRenderer from './renderer/canvas/VectorLayer.js';
 import CanvasVectorTileLayerRenderer from './renderer/canvas/VectorTileLayer.js';
@@ -83,6 +84,7 @@ class Map extends PluggableMap {
     const renderer = new CanvasMapRenderer(this);
     renderer.registerLayerRenderers([
       CanvasImageLayerRenderer,
+      CanvasRasterLayerRenderer,
       CanvasTileLayerRenderer,
       CanvasVectorLayerRenderer,
       CanvasVectorTileLayerRenderer
