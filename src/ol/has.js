@@ -117,9 +117,8 @@ export const MSPOINTER = !!(navigator.msPointerEnabled);
  * True if browser supports typed arrays, therefore rasters.
  * @const
  * @type {boolean}
- * @api
  */
-export const RASTER = 'ArrayBuffer' in window;
+export const TYPED_ARRAY = 'ArrayBuffer' in window;
 
 
 export {HAS as WEBGL} from './webgl.js';
