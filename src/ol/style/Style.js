@@ -86,7 +86,7 @@
  *      );
  * ```
  *
- * Raster styles.
+ * Coverage styles.
  *
  * If no style is defined, the following default style is used:
  * ```js
