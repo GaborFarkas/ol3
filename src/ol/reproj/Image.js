@@ -31,8 +31,9 @@ class ReprojImage extends ImageBase {
    * @param {number} pixelRatio Pixel ratio.
    * @param {module:ol/reproj/Image~FunctionType} getImageFunction
    *     Function returning source images (extent, resolution, pixelRatio).
+   * @param {boolean=} opt_smooth Smooth the reprojected image.
    */
-  constructor(sourceProj, targetProj, targetExtent, targetResolution, pixelRatio, getImageFunction) {
+  constructor(sourceProj, targetProj, targetExtent, targetResolution, pixelRatio, getImageFunction, opt_smooth) {
     const maxSourceExtent = sourceProj.getExtent();
     const maxTargetExtent = targetProj.getExtent();
 
@@ -112,6 +113,12 @@ class ReprojImage extends ImageBase {
      * @type {?module:ol/events~EventsKey}
      */
     this.sourceListenerKey_ = null;
+
+    /**
+     * @private
+     * @type {boolean|undefined}
+     */
+    this.smooth_ = opt_smooth;
   }
 
   /**
@@ -152,7 +159,7 @@ class ReprojImage extends ImageBase {
         this.targetResolution_, this.targetExtent_, this.triangulation_, [{
           extent: this.sourceImage_.getExtent(),
           image: this.sourceImage_.getImage()
-        }], 0);
+        }], 0, undefined, this.smooth_);
     }
     this.state = sourceState;
     this.changed();
