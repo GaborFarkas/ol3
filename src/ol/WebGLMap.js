@@ -7,7 +7,7 @@ import {defaults as defaultInteractions} from './interaction.js';
 import {assign} from './obj.js';
 import WebGLImageLayerRenderer from './renderer/webgl/ImageLayer.js';
 import WebGLMapRenderer from './renderer/webgl/Map.js';
-import WebGLRasterLayerRenderer from './renderer/canvas/RasterLayer.js';
+import WebGLCoverageLayerRenderer from './renderer/webgl/CoverageLayer.js';
 import WebGLTileLayerRenderer from './renderer/webgl/TileLayer.js';
 import WebGLVectorLayerRenderer from './renderer/webgl/VectorLayer.js';
 
@@ -84,7 +84,7 @@ class WebGLMap extends PluggableMap {
     const renderer = new WebGLMapRenderer(this);
     renderer.registerLayerRenderers([
       WebGLImageLayerRenderer,
-      WebGLRasterLayerRenderer,
+      WebGLCoverageLayerRenderer,
       WebGLTileLayerRenderer,
       WebGLVectorLayerRenderer
     ]);
