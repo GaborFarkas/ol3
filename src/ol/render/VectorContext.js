@@ -39,6 +39,12 @@ class VectorContext {
   drawCircle(circleGeometry, feature) {}
 
   /**
+   * @param {Array.<number>} flatCoverage Flat coverage array.
+   * @param {number} vertices Number of vertex coordinates in a cell.
+   */
+  drawCoverage(flatCoverage, vertices) {}
+
+  /**
    * @param {module:ol/Feature} feature Feature.
    * @param {module:ol/style/Style} style Style.
    */
