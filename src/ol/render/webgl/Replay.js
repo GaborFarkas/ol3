@@ -138,6 +138,7 @@ class WebGLReplay extends VectorContext {
    * @param {module:ol/size~Size} size Size.
    * @param {number} pixelRatio Pixel ratio.
    * @return {module:ol/render/webgl/circlereplay/defaultshader/Locations|
+     module:ol/render/webgl/coveragereplay/defaultshader/Locations|
      module:ol/render/webgl/linestringreplay/defaultshader/Locations|
      module:ol/render/webgl/polygonreplay/defaultshader/Locations|
      module:ol/render/webgl/texturereplay/defaultshader/Locations} Locations.
@@ -149,6 +150,7 @@ class WebGLReplay extends VectorContext {
    * @protected
    * @param {WebGLRenderingContext} gl gl.
    * @param {module:ol/render/webgl/circlereplay/defaultshader/Locations|
+     module:ol/render/webgl/coveragereplay/defaultshader/Locations|
      module:ol/render/webgl/linestringreplay/defaultshader/Locations|
      module:ol/render/webgl/polygonreplay/defaultshader/Locations|
      module:ol/render/webgl/texturereplay/defaultshader/Locations} locations Locations.
