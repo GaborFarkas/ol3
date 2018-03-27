@@ -28,6 +28,7 @@ const CoverageLayer = function(opt_options) {
   const baseOptions = assign({}, options);
 
   delete baseOptions.style;
+  delete baseOptions.strokeWidth;
   delete baseOptions.updateWhileAnimating;
   delete baseOptions.updateWhileInteracting;
   Layer.call(this, /** @type {olx.layer.LayerOptions} */ (baseOptions));
