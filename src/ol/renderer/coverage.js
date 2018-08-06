@@ -21,14 +21,14 @@ export function getTolerance(resolution, pixelRatio) {
 
 
 /**
- * @param {ol.coverage.Band} band Input band.
+ * @param {module:ol/coverage/Band} band Input band.
  * @param {Array.<number>} shape Cell shape.
- * @param {ol.coverage.CoverageType} type Coverage type.
- * @param {ol.proj.Projection} inProj Coverage projection.
- * @param {ol.proj.Projection} outProj Map projection.
+ * @param {module:ol/coverage/CoverageType} type Coverage type.
+ * @param {module:ol/proj/Projection} inProj Coverage projection.
+ * @param {module:ol/proj/Projection} outProj Map projection.
  * @param {number} maxAlpha Maximum alpha value.
- * @param {ol.CoveragePattern=} pattern Coverage pattern.
- * @return {ol.structs.RBush} R-tree filled with cells.
+ * @param {module:ol/source/Coverage~CoveragePattern=} pattern Coverage pattern.
+ * @return {module:ol/structs/RBush} R-tree filled with cells.
  */
 export function createGrid(band, shape, type, inProj, outProj, maxAlpha, pattern) {
   const reproj = !equivalent(inProj, outProj);
@@ -140,10 +140,10 @@ export function createGrid(band, shape, type, inProj, outProj, maxAlpha, pattern
 
 
 /**
- * @param {ol.render.ReplayGroup} replayGroup Replay group.
+ * @param {module:ol/render/ReplayGroup} replayGroup Replay group.
  * @param {Array.<number>} flatCoverage Coverage cell coordinates and colors.
  * @param {number} numVertices Number of vertex coordinates in a cell.
- * @param {ol.style.Stroke} stroke Stroke style for cosmetic stroke.
+ * @param {module:ol/style/Stroke} stroke Stroke style for cosmetic stroke.
  * @param {Array.<number>=} indices Index numbers for WebGL renderer.
  */
 export function renderCoverage(replayGroup, flatCoverage, numVertices, stroke, indices) {

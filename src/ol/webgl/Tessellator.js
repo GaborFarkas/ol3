@@ -34,14 +34,14 @@ const Tessellator = function(flatCoordinates, holeFlatCoordinates, stride) {
 
   /**
    * @private
-   * @type {ol.structs.LinkedList}
+   * @type {module:ol/structs/LinkedList}
    */
   this.list_ = new LinkedList();
 
 
   /**
    * @private
-   * @type {ol.structs.RBush}
+   * @type {module:ol/structs/RBush}
    */
   this.rtree_ = new RBush();
 
@@ -70,10 +70,10 @@ const Tessellator = function(flatCoordinates, holeFlatCoordinates, stride) {
 
 
 /**
-* Prepare the tessellator for tessellating one polygon.
-* @param {Array.<number>} flatCoordinates Flat coordinates.
-* @param {Array.<Array.<number>>} holeFlatCoordinates Hole flat coordinates.
-* @private
+ * Prepare the tessellator for tessellating one polygon.
+ * @param {Array.<number>} flatCoordinates Flat coordinates.
+ * @param {Array.<Array.<number>>} holeFlatCoordinates Hole flat coordinates.
+ * @private
  */
 Tessellator.prototype.prepare_ = function(flatCoordinates, holeFlatCoordinates) {
   // Triangulate the polygon
@@ -133,8 +133,8 @@ Tessellator.prototype.prepare_ = function(flatCoordinates, holeFlatCoordinates) 
  * Inserts flat coordinates in a linked list and adds them to the vertex buffer.
  * @private
  * @param {Array.<number>} flatCoordinates Flat coordinates.
- * @param {ol.structs.LinkedList} list Linked list.
- * @param {ol.structs.RBush} rtree R-Tree of the polygon.
+ * @param {module:ol/structs/LinkedList} list Linked list.
+ * @param {module:ol/structs/RBush} rtree R-Tree of the polygon.
  * @param {boolean} clockwise Coordinate order should be clockwise.
  */
 Tessellator.prototype.processFlatCoordinates_ = function(
@@ -144,11 +144,11 @@ Tessellator.prototype.processFlatCoordinates_ = function(
     0, flatCoordinates.length, stride);
   let i, ii;
   let n = this.vertices.length / 2;
-  /** @type {ol.WebglPolygonVertex} */
+  /** @type {module:ol/webgl/Tessellator~PolygonVertex} */
   let start;
-  /** @type {ol.WebglPolygonVertex} */
+  /** @type {module:ol/webgl/Tessellator~PolygonVertex} */
   let p0;
-  /** @type {ol.WebglPolygonVertex} */
+  /** @type {module:ol/webgl/Tessellator~PolygonVertex} */
   let p1;
   const extents = [];
   const segments = [];
@@ -187,7 +187,7 @@ Tessellator.prototype.processFlatCoordinates_ = function(
 /**
  * Returns the rightmost coordinates of a polygon on the X axis.
  * @private
- * @param {ol.structs.LinkedList} list Polygons ring.
+ * @param {module:ol/structs/LinkedList} list Polygons ring.
  * @return {Array.<number>} Max X coordinates.
  */
 Tessellator.prototype.getMaxCoords_ = function(list) {
@@ -209,8 +209,8 @@ Tessellator.prototype.getMaxCoords_ = function(list) {
 /**
  * Classifies the points of a polygon list as convex, reflex. Removes collinear vertices.
  * @private
- * @param {ol.structs.LinkedList} list Polygon ring.
- * @param {ol.structs.RBush} rtree R-Tree of the polygon.
+ * @param {module:ol/structs/LinkedList} list Polygon ring.
+ * @param {module:ol/structs/RBush} rtree R-Tree of the polygon.
  * @param {boolean} ccw The orientation of the polygon is counter-clockwise.
  * @return {boolean} There were reclassified points.
  */
@@ -245,11 +245,11 @@ Tessellator.prototype.classifyPoints_ = function(list, rtree, ccw) {
 
 /**
  * @private
- * @param {ol.structs.LinkedList} hole Linked list of the hole.
+ * @param {module:ol/structs/LinkedList} hole Linked list of the hole.
  * @param {number} holeMaxX Maximum X value of the hole.
- * @param {ol.structs.LinkedList} list Linked list of the polygon.
+ * @param {module:ol/structs/LinkedList} list Linked list of the polygon.
  * @param {number} listMaxX Maximum X value of the polygon.
- * @param {ol.structs.RBush} rtree R-Tree of the polygon.
+ * @param {module:ol/structs/RBush} rtree R-Tree of the polygon.
  * @return {boolean} Bridging was successful.
  */
 Tessellator.prototype.bridgeHole_ = function(hole, holeMaxX,
@@ -260,11 +260,11 @@ Tessellator.prototype.bridgeHole_ = function(hole, holeMaxX,
   }
 
   const p1 = seg.p1;
-  /** @type {ol.WebglPolygonVertex} */
+  /** @type {module:ol/webgl/Tessellator~PolygonVertex} */
   const p2 = {x: listMaxX, y: p1.y, i: -1};
   let minDist = Infinity;
   let i, ii, bestPoint;
-  /** @type {ol.WebglPolygonVertex} */
+  /** @type {module:ol/webgl/Tessellator~PolygonVertex} */
   let p5;
 
   const intersectingSegments = this.getIntersections_({p0: p1, p1: p2}, rtree, true);
@@ -322,8 +322,8 @@ Tessellator.prototype.bridgeHole_ = function(hole, holeMaxX,
 
 /**
  * @private
- * @param {ol.structs.LinkedList} list Linked list of the polygon.
- * @param {ol.structs.RBush} rtree R-Tree of the polygon.
+ * @param {module:ol/structs/LinkedList} list Linked list of the polygon.
+ * @param {module:ol/structs/RBush} rtree R-Tree of the polygon.
  */
 Tessellator.prototype.tessellate_ = function(list, rtree) {
   let ccw = false;
@@ -372,8 +372,8 @@ Tessellator.prototype.tessellate_ = function(list, rtree) {
 
 /**
  * @private
- * @param {ol.structs.LinkedList} list Linked list of the polygon.
- * @param {ol.structs.RBush} rtree R-Tree of the polygon.
+ * @param {module:ol/structs/LinkedList} list Linked list of the polygon.
+ * @param {module:ol/structs/RBush} rtree R-Tree of the polygon.
  * @param {boolean} simple The polygon is simple.
  * @param {boolean} ccw Orientation of the polygon is counter-clockwise.
  * @return {boolean} There were processed ears.
@@ -431,11 +431,11 @@ Tessellator.prototype.clipEars_ = function(list, rtree, simple, ccw) {
 
 /**
  * @private
- * @param {ol.structs.LinkedList} list Linked list of the polygon.
- * @param {ol.structs.RBush} rtree R-Tree of the polygon.
+ * @param {module:ol/structs/LinkedList} list Linked list of the polygon.
+ * @param {module:ol/structs/RBush} rtree R-Tree of the polygon.
  * @param {boolean=} opt_touch Resolve touching segments.
  * @return {boolean} There were resolved intersections.
-*/
+ */
 Tessellator.prototype.resolveSelfIntersections_ = function(
   list, rtree, opt_touch) {
   const start = list.firstItem();
@@ -500,8 +500,8 @@ Tessellator.prototype.resolveSelfIntersections_ = function(
 
 /**
  * @private
- * @param {ol.structs.LinkedList} list Linked list of the polygon.
- * @param {ol.structs.RBush} rtree R-Tree of the polygon.
+ * @param {module:ol/structs/LinkedList} list Linked list of the polygon.
+ * @param {module:ol/structs/RBush} rtree R-Tree of the polygon.
  * @return {boolean} The polygon is simple.
  */
 Tessellator.prototype.isSimple_ = function(list, rtree) {
@@ -519,7 +519,7 @@ Tessellator.prototype.isSimple_ = function(list, rtree) {
 
 /**
  * @private
- * @param {ol.structs.LinkedList} list Linked list of the polygon.
+ * @param {module:ol/structs/LinkedList} list Linked list of the polygon.
  * @return {boolean} Orientation is clockwise.
  */
 Tessellator.prototype.isClockwise_ = function(list) {
@@ -539,8 +539,8 @@ Tessellator.prototype.isClockwise_ = function(list) {
 
 /**
  * @private
- * @param {ol.structs.LinkedList} list Linked list of the polygon.
- * @param {ol.structs.RBush} rtree R-Tree of the polygon.
+ * @param {module:ol/structs/LinkedList} list Linked list of the polygon.
+ * @param {module:ol/structs/RBush} rtree R-Tree of the polygon.
  */
 Tessellator.prototype.splitPolygon_ = function(list, rtree) {
   const start = list.firstItem();
@@ -592,7 +592,7 @@ Tessellator.prototype.createPoint_ = function(x, y, i) {
   let numVertices = this.vertices.length;
   this.vertices[numVertices++] = x;
   this.vertices[numVertices++] = y;
-  /** @type {ol.WebglPolygonVertex} */
+  /** @type {module:ol/webgl/Tessellator~PolygonVertex} */
   const p = {
     x: x,
     y: y,
@@ -607,8 +607,8 @@ Tessellator.prototype.createPoint_ = function(x, y, i) {
  * @private
  * @param {module:ol/webgl/Tessellator~PolygonVertex} p0 First point of segment.
  * @param {module:ol/webgl/Tessellator~PolygonVertex} p1 Second point of segment.
- * @param {ol.structs.LinkedList} list Polygon ring.
- * @param {ol.structs.RBush=} opt_rtree Insert the segment into the R-Tree.
+ * @param {module:ol/structs/LinkedList} list Polygon ring.
+ * @param {module:ol/structs/RBush=} opt_rtree Insert the segment into the R-Tree.
  * @return {module:ol/webgl/Tessellator~PolygonSegment} segment.
  */
 Tessellator.prototype.insertItem_ = function(p0, p1, list, opt_rtree) {
@@ -626,12 +626,12 @@ Tessellator.prototype.insertItem_ = function(p0, p1, list, opt_rtree) {
 
 
 /**
-  * @private
-  * @param {module:ol/webgl/Tessellator~PolygonSegment} s0 Segment before the remove candidate.
-  * @param {module:ol/webgl/Tessellator~PolygonSegment} s1 Remove candidate segment.
-  * @param {ol.structs.LinkedList} list Polygon ring.
-  * @param {ol.structs.RBush} rtree R-Tree of the polygon.
-  */
+ * @private
+ * @param {module:ol/webgl/Tessellator~PolygonSegment} s0 Segment before the remove candidate.
+ * @param {module:ol/webgl/Tessellator~PolygonSegment} s1 Remove candidate segment.
+ * @param {module:ol/structs/LinkedList} list Polygon ring.
+ * @param {module:ol/structs/RBush} rtree R-Tree of the polygon.
+ */
 Tessellator.prototype.removeItem_ = function(s0, s1, list, rtree) {
   if (list.getCurrItem() === s1) {
     list.removeItem();
@@ -648,7 +648,7 @@ Tessellator.prototype.removeItem_ = function(s0, s1, list, rtree) {
  * @param {module:ol/webgl/Tessellator~PolygonVertex} p0 First point.
  * @param {module:ol/webgl/Tessellator~PolygonVertex} p1 Second point.
  * @param {module:ol/webgl/Tessellator~PolygonVertex} p2 Third point.
- * @param {ol.structs.RBush} rtree R-Tree of the polygon.
+ * @param {module:ol/structs/RBush} rtree R-Tree of the polygon.
  * @param {boolean=} opt_reflex Only include reflex points.
  * @return {Array.<module:ol/webgl/Tessellator~PolygonVertex>} Points in the triangle.
  */
@@ -676,7 +676,7 @@ Tessellator.prototype.getPointsInTriangle_ = function(p0, p1, p2, rtree, opt_ref
 /**
  * @private
  * @param {module:ol/webgl/Tessellator~PolygonSegment} segment Segment.
- * @param {ol.structs.RBush} rtree R-Tree of the polygon.
+ * @param {module:ol/structs/RBush} rtree R-Tree of the polygon.
  * @param {boolean=} opt_touch Touching segments should be considered an intersection.
  * @return {Array.<module:ol/webgl/Tessellator~PolygonSegment>} Intersecting segments.
  */

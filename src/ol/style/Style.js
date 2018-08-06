@@ -90,7 +90,8 @@
  *
  * If no style is defined, the following default style is used:
  * ```js
- *  var style = new ol.style.Monochrome();
+ * import {Monochrome} from 'ol/style';
+ *  var style = new Monochrome();
  * ```
  */
 import {assert} from '../asserts.js';
@@ -128,6 +129,13 @@ import Stroke from '../style/Stroke.js';
  *
  * @typedef {function((module:ol/coordinate~Coordinate|Array<module:ol/coordinate~Coordinate>|Array<Array<module:ol/coordinate~Coordinate>>),module:ol/render~State)}
  * RenderFunction
+ */
+
+
+/**
+ * Styles, which can be associated to coverage layers.
+ *
+ * @typedef {module:ol/style/Monochrome|module:ol/style/Pseudocolor|module:ol/style/RGB} CoverageStyle
  */
 
 

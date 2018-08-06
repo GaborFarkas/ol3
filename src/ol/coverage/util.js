@@ -10,8 +10,8 @@ import {mode} from '../math.js';
 
 /**
  * @private
- * @param {Array.<ol.Size>} resolutions Resolutions.
- * @return {ol.Size} Optimal resolution.
+ * @param {Array.<module:ol/size~Size>} resolutions Resolutions.
+ * @return {module:ol/size~Size} Optimal resolution.
  */
 function _getOptimalResolution(resolutions) {
   let resolution;
@@ -37,10 +37,10 @@ function _getOptimalResolution(resolutions) {
 
 /**
  * Convenience function for aligning input raster bands.
- * @param {Array.<ol.coverage.Band>} bands Bands.
- * @param {ol.coverage.CoverageType} type Type.
- * @return {{matrices: Array.<ol.CoverageData>,
-             properties: ol.CoverageProperties}} Aligned matrices with common properties.
+ * @param {Array.<module:ol/coverage/Band>} bands Bands.
+ * @param {module:ol/coverage/CoverageType} type Type.
+ * @return {{matrices: Array.<module:ol/coverage/Matrix~CoverageData>,
+             properties: module:ol/coverage/Band~CoverageProperties}} Aligned matrices with common properties.
  */
 export function alignRasterBands(bands, type) {
   const rasters = [];
@@ -107,13 +107,13 @@ export function alignRasterBands(bands, type) {
 
 /**
  * Resample a coverage to another resolution.
- * @param {ol.CoverageData} matrix Coverage data.
- * @param {ol.CoverageProperties} properties Coverage properties.
- * @param {ol.Size} newResolution Output resolution.
- * @param {ol.coverage.InterpolationMethod=} opt_method Interpolation method.
+ * @param {module:ol/coverage/Matrix~CoverageData} matrix Coverage data.
+ * @param {module:ol/coverage/Band~CoverageProperties} properties Coverage properties.
+ * @param {module:ol/size~Size} newResolution Output resolution.
+ * @param {module:ol/coverage/InterpolationMethod=} opt_method Interpolation method.
  *        Default is NN.
- * @return {{matrix: ol.CoverageData,
- *           properties: ol.CoverageProperties}} Resampled coverage.
+ * @return {{matrix: module:ol/coverage/Matrix~CoverageData,
+ *           properties: module:ol/coverage/Band~CoverageProperties}} Resampled coverage.
  */
 export function resampleCoverage(matrix, properties, newResolution, opt_method) {
   const method = opt_method ? opt_method : InterpolationMethod.NEAREST;
@@ -125,7 +125,7 @@ export function resampleCoverage(matrix, properties, newResolution, opt_method) 
       newResolution[1] === properties.resolution[1]) {
     return resampled;
   }
-  resampled.properties = /** @type {ol.CoverageProperties} */ (assign({}, properties));
+  resampled.properties = /** @type {module:ol/coverage/Band~CoverageProperties} */ (assign({}, properties));
   const resolution = newResolution.slice();
   resampled.properties.resolution = resolution;
   const xOffset = properties.type === CoverageType.HEXAGONAL ?
@@ -176,11 +176,11 @@ export function resampleCoverage(matrix, properties, newResolution, opt_method) 
 
 /**
  * Fill a coverage with nodata values to match target extent.
- * @param {ol.CoverageData} matrix Coverage data.
- * @param {ol.CoverageProperties} properties Coverage properties.
- * @param {ol.Extent} targetExtent Target extent.
- * @return {{matrix: ol.CoverageData,
- *           properties: ol.CoverageProperties}} Extended coverage.
+ * @param {module:ol/coverage/Matrix~CoverageData} matrix Coverage data.
+ * @param {module:ol/coverage/Band~CoverageProperties} properties Coverage properties.
+ * @param {module:ol/extent~Extent} targetExtent Target extent.
+ * @return {{matrix: module:ol/coverage/Matrix~CoverageData,
+ *           properties: module:ol/coverage/Band~CoverageProperties}} Extended coverage.
  */
 export function extendCoverage(matrix, properties, targetExtent) {
   const extended = {
@@ -190,7 +190,7 @@ export function extendCoverage(matrix, properties, targetExtent) {
   if (equals(targetExtent, properties.extent)) {
     return extended;
   }
-  extended.properties = /** @type {ol.CoverageProperties} */ (assign({}, properties));
+  extended.properties = /** @type {module:ol/coverage/Band~CoverageProperties} */ (assign({}, properties));
   extended.properties.resolution = properties.resolution.slice();
   extended.properties.extent = [targetExtent[0], targetExtent[1],
     targetExtent[2] + extended.properties.resolution[0] -
@@ -238,9 +238,9 @@ export function extendCoverage(matrix, properties, targetExtent) {
 
 /**
  * Returns the nearest x cells from the provided image coordinate in the provided matrix.
- * @param {ol.CoverageData} matrix Coverage data.
- * @param {ol.CoverageProperties} properties Coverage properties.
- * @param {ol.Coordinate} coord Image coordinate.
+ * @param {module:ol/coverage/Matrix~CoverageData} matrix Coverage data.
+ * @param {module:ol/coverage/Band~CoverageProperties} properties Coverage properties.
+ * @param {module:ol/coordinate~Coordinate} coord Image coordinate.
  * @param {number} numCells Number of nearest cells to return.
  * @return {Array.<number>} Distances and cell values.
  */

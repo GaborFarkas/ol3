@@ -5,14 +5,14 @@
 
 /**
  * @private
- * @type {GeoTIFF}
+ * @type {?}
  */
 let cache = null;
 
 
 /**
  * Store the GeoTIFF function.
- * @param {GeoTIFF} geotiff The GeoTIFF function.
+ * @param {?} geotiff The GeoTIFF library namespace.
  */
 export function set(geotiff) {
   cache = geotiff;
@@ -21,7 +21,7 @@ export function set(geotiff) {
 
 /**
  * Get the GeoTIFF lib.
- * @return {GeoTIFF} The GeoTIFF function set above or available globally.
+ * @return {?} The GeoTIFF function set above or available globally.
  */
 export function get() {
   return cache || window['GeoTIFF'];
